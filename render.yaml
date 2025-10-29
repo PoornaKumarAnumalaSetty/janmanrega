@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: janmanrega
+    env: java
+    buildCommand: "./mvnw clean package -DskipTests"
+    startCommand: "java -jar target/*.jar"
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: "jdbc:postgresql://<your-postgres-host>:5432/janmanrega"
+      - key: SPRING_DATASOURCE_USERNAME
+        value: "postgres"
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: "Setty@123"
+      - key: SERVER_PORT
+        value: "10000"
