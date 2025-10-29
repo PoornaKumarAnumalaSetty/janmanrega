@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>जनमनरेगा - जिला डैशबोर्ड</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+Devanagari:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root{--text:#f5f7fb;--stroke:rgba(255,255,255,.18);--panel:rgba(255,255,255,.10);--accent:#3b82f6;--accent2:#60a5fa;--shadow:0 10px 30px rgba(0,0,0,.32)}
+        html,body{height:100%}
+        body{font-family:'Noto Sans Devanagari','Noto Sans Telugu','Inter',system-ui; margin:0; color:var(--text); background:
+            radial-gradient(circle at 12% 18%, rgba(255,255,255,0.12) 0 3px, transparent 4px) 0 0/46px 46px,
+            radial-gradient(circle at 82% 8%, rgba(255,255,255,0.10) 0 2px, transparent 3px) 0 0/64px 64px,
+            radial-gradient(circle at 62% 72%, rgba(255,255,255,0.08) 0 2px, transparent 3px) 0 0/54px 54px,
+            linear-gradient(135deg,#0b1220,#1f2a44)}
+        .wrap{max-width:1200px;margin:0 auto;padding:32px}
+        .topbar{display:flex;gap:12px;align-items:center}
+        .mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(45deg,var(--accent),var(--accent2));box-shadow:var(--shadow)}
+        .title{font-weight:800}
+        .back{margin-left:auto;text-decoration:none;color:#ffffff;background:linear-gradient(45deg,var(--accent),var(--accent2));padding:8px 14px;border-radius:999px;font-weight:700;box-shadow:var(--shadow)}
+
+        .head{border:1px solid var(--stroke);background:var(--panel);border-radius:20px;padding:28px;margin:18px 0;backdrop-filter:blur(6px);box-shadow:var(--shadow);text-align:center}
+        .head h1{margin:0 0 6px 0}
+        .head p{opacity:.9;margin:0}
+
+        .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:24px 0}
+        .metric{border:1px solid var(--stroke);border-radius:16px;padding:20px;background:var(--panel);backdrop-filter:blur(6px);text-align:center}
+        .metric .icon{font-size:30px;margin-bottom:6px;display:block}
+        .metric .val{font-size:30px;font-weight:800}
+        .metric .lbl{opacity:.9}
+        .chip{display:inline-block;margin-top:8px;padding:4px 10px;border-radius:999px;font-weight:700}
+        .up{background:#d4edda;color:#155724}
+        .down{background:#f8d7da;color:#721c24}
+        .neutral{background:#e2e3e5;color:#383d41}
+
+        .panel{border:1px solid var(--stroke);background:var(--panel);border-radius:16px;padding:24px;box-shadow:var(--shadow);margin:18px 0}
+        .panel h3{text-align:center;margin:0 0 12px 0}
+        .center{text-align:center}
+        .link-btn{display:inline-block;text-decoration:none;color:#ffffff;background:linear-gradient(45deg,var(--accent),var(--accent2));padding:10px 16px;border-radius:999px;font-weight:700;box-shadow:var(--shadow)}
+        @media(max-width:768px){.metrics{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="topbar">
+        <span class="mark"></span>
+        <span class="title">जनमनरेगा</span>
+        <div style="margin-left:auto;display:flex;gap:6px">
+            <a class="back" th:href="@{/(lang='en')}">EN</a>
+            <a class="back" th:href="@{/(lang='hi')}">हिं</a>
+            <a href="/" class="back">← वापस जाएं</a>
+        </div>
+    </div>
+    <div class="head">
+        <h1 th:text="${districtName}">जिला नाम</h1>
+        <p>मनरेगा प्रदर्शन डैशबोर्ड</p>
+    </div>
+
+    <div th:if="${error}" class="error-message">
+        <h3>त्रुटि</h3>
+        <p th:text="${error}">डेटा लोड करने में समस्या</p>
+    </div>
+
+    <div th:if="${summary != null}">
+        <!-- Key Metrics -->
+        <div class="metrics">
+            <div class="metric">
+                <span class="icon">🏠</span>
+                <div class="val" th:text="${summary.totalHouseholdsWorked}">0</div>
+                <div class="lbl">काम करने वाले परिवार</div>
+                <div th:if="${summary.trends.householdsChange}" class="chip" th:classappend=" ${summary.trends.householdsChange.direction == 'up'} ? ' up' : (${summary.trends.householdsChange.direction == 'down'} ? ' down' : ' neutral') ">
+                    <span th:if="${summary.trends.householdsChange.direction == 'up'}">↑</span>
+                    <span th:if="${summary.trends.householdsChange.direction == 'down'}">↓</span>
+                    <span th:text="${summary.trends.householdsChange.percentage}">0</span>%
+                </div>
+            </div>
+            <div class="metric">
+                <span class="icon">🌞</span>
+                <div class="val" th:text="${summary.averageDaysOfEmployment}">0</div>
+                <div class="lbl">औसत रोजगार दिवस</div>
+                <div th:if="${summary.trends.employmentDaysChange}" class="chip" th:classappend=" ${summary.trends.employmentDaysChange.direction == 'up'} ? ' up' : (${summary.trends.employmentDaysChange.direction == 'down'} ? ' down' : ' neutral') ">
+                    <span th:if="${summary.trends.employmentDaysChange.direction == 'up'}">↑</span>
+                    <span th:if="${summary.trends.employmentDaysChange.direction == 'down'}">↓</span>
+                    <span th:text="${summary.trends.employmentDaysChange.percentage}">0</span>%
+                </div>
+            </div>
+            <div class="metric">
+                <span class="icon">💰</span>
+                <div class="val" th:text="${summary.totalExpenditure}">0</div>
+                <div class="lbl">कुल व्यय (लाख रुपये)</div>
+                <div th:if="${summary.trends.expenditureChange}" class="chip" th:classappend=" ${summary.trends.expenditureChange.direction == 'up'} ? ' up' : (${summary.trends.expenditureChange.direction == 'down'} ? ' down' : ' neutral') ">
+                    <span th:if="${summary.trends.expenditureChange.direction == 'up'}">↑</span>
+                    <span th:if="${summary.trends.expenditureChange.direction == 'down'}">↓</span>
+                    <span th:text="${summary.trends.expenditureChange.percentage}">0</span>%
+                </div>
+            </div>
+            <div class="metric">
+                <span class="icon">👥</span>
+                <div class="val" th:text="${summary.totalIndividualsWorked}">0</div>
+                <div class="lbl">काम करने वाले व्यक्ति</div>
+                <div th:if="${summary.trends.individualsChange}" class="chip" th:classappend=" ${summary.trends.individualsChange.direction == 'up'} ? ' up' : (${summary.trends.individualsChange.direction == 'down'} ? ' down' : ' neutral') ">
+                    <span th:if="${summary.trends.individualsChange.direction == 'up'}">↑</span>
+                    <span th:if="${summary.trends.individualsChange.direction == 'down'}">↓</span>
+                    <span th:text="${summary.trends.individualsChange.percentage}">0</span>%
+                </div>
+            </div>
+            <div class="metric">
+                <span class="icon">💵</span>
+                <div class="val" th:text="${summary.averageWageRate}">0</div>
+                <div class="lbl">औसत मजदूरी दर (रुपये/दिन)</div>
+            </div>
+            <div class="metric">
+                <span class="icon">👩</span>
+                <div class="val" th:text="${summary.womenPersondays}">0</div>
+                <div class="lbl">महिला व्यक्ति-दिवस</div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="panel">
+            <h3>पिछले 5 वर्षों का रोजगार प्रदर्शन</h3>
+            <div class="center">
+                <img th:src="@{/chart/{name}(name=${districtName})}" alt="Person Days Chart" style="max-width:100%;height:auto;border-radius:10px;">
+            </div>
+        </div>
+
+        <!-- Additional Metrics -->
+        <div class="panel">
+            <h3>अतिरिक्त जानकारी</h3>
+            <div class="metrics">
+                <div class="metric"><div class="val" th:text="${summary.completedWorks}">0</div><div class="lbl">पूर्ण कार्य</div></div>
+                <div class="metric"><div class="val" th:text="${summary.ongoingWorks}">0</div><div class="lbl">चल रहे कार्य</div></div>
+                <div class="metric"><div class="val" th:text="${summary.activeJobCards}">0</div><div class="lbl">सक्रिय जॉब कार्ड</div></div>
+                <div class="metric"><div class="val" th:text="${summary.activeWorkers}">0</div><div class="lbl">सक्रिय कर्मचारी</div></div>
+                <div class="metric"><div class="val" th:text="${summary.hundredDaysCompleted}">0</div><div class="lbl">100 दिन पूर्ण करने वाले परिवार</div></div>
+            </div>
+        </div>
+
+        <!-- Year Comparison -->
+        <div class="panel center">
+            <h3>इस साल बनाम पिछले साल</h3>
+            <p>वर्तमान वर्ष: <strong th:text="${summary.latestYear}">2023-24</strong> · महीना: <strong th:text="${summary.latestMonth}">जून</strong></p>
+            <small>↑ = सुधार · ↓ = गिरावट</small>
+        </div>
+    </div>
+
+    <div class="center" style="margin-top:24px">
+        <a href="/" class="link-btn">वापस जाएं</a>
+    </div>
+</div>
+</body>
+</html>
