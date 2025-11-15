@@ -16,6 +16,11 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+        jdbc:
+          batch_size: 50
+          fetch_size: 50
+        order_inserts: true
+        order_updates: true
 
   cache:
     type: simple
@@ -23,11 +28,13 @@ spring:
       - districts
       - district-performance
       - dashboard-summary
+      - chart-images
     simple:
       cache-specs:
         districts: expireAfterWrite=1h
         district-performance: expireAfterWrite=1h
         dashboard-summary: expireAfterWrite=1h
+        chart-images: expireAfterWrite=1h
 
   thymeleaf:
     cache: false

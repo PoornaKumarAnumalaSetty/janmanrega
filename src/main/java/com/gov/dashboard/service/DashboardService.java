@@ -152,18 +152,16 @@ public class DashboardService {
     private Map<String, Object> generateChartData(List<DistrictPerformance> performances) {
         Map<String, Object> chartData = new HashMap<>();
 
-        // Get last 5 years of data
-        List<DistrictPerformance> lastFiveYears = performances.stream()
-                .limit(5)
-                .collect(Collectors.toList());
-
-        List<String> years = lastFiveYears.stream()
-                .map(DistrictPerformance::getFinYear)
-                .collect(Collectors.toList());
-
-        List<BigDecimal> personDays = lastFiveYears.stream()
-                .map(p -> p.getTotalIndividualsWorked() != null ? p.getTotalIndividualsWorked() : BigDecimal.ZERO)
-                .collect(Collectors.toList());
+        // Get last 5 years of data - limit is more efficient than collect then limit
+        int limit = Math.min(5, performances.size());
+        List<String> years = new ArrayList<>(limit);
+        List<BigDecimal> personDays = new ArrayList<>(limit);
+        
+        for (int i = 0; i < limit; i++) {
+            DistrictPerformance p = performances.get(i);
+            years.add(p.getFinYear());
+            personDays.add(p.getTotalIndividualsWorked() != null ? p.getTotalIndividualsWorked() : BigDecimal.ZERO);
+        }
 
         chartData.put("years", years);
         chartData.put("personDays", personDays);
@@ -171,6 +169,7 @@ public class DashboardService {
         return chartData;
     }
 
+    @Cacheable(value = "chart-images", key = "#districtName")
     public byte[] generateChartImage(String districtName) {
         try {
             List<DistrictPerformance> performances = findPerformanceByDistrict(districtName);
