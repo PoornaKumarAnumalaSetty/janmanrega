@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,30 +31,50 @@ public class CsvDataService {
     @Value("${app.csv.directory:C:\\Users\\Lakshmi Makkena\\Desktop\\Gov Project\\Gov Data CSV's}")
     private String csvDirectory;
 
+    @Transactional
     public void loadCsvData(String filePath) {
         try {
             logger.info("Loading CSV data from: {}", filePath);
             
             List<DistrictPerformance> records = new ArrayList<>();
+            int batchSize = 1000;
+            int totalRecords = 0;
             
             try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
-                List<String[]> allRows = reader.readAll();
-                
                 // Skip header row
-                for (int i = 1; i < allRows.size(); i++) {
-                    String[] row = allRows.get(i);
-                    if (row.length >= 36) { // Ensure we have enough columns
-                        DistrictPerformance record = mapRowToEntity(row);
+                String[] nextLine;
+                boolean isFirstLine = true;
+                
+                while ((nextLine = reader.readNext()) != null) {
+                    if (isFirstLine) {
+                        isFirstLine = false;
+                        continue; // Skip header
+                    }
+                    
+                    if (nextLine.length >= 36) { // Ensure we have enough columns
+                        DistrictPerformance record = mapRowToEntity(nextLine);
                         if (record != null) {
                             records.add(record);
+                            
+                            // Save in batches to reduce memory usage
+                            if (records.size() >= batchSize) {
+                                repository.saveAll(records);
+                                totalRecords += records.size();
+                                records.clear();
+                                logger.debug("Saved batch of {} records, total: {}", batchSize, totalRecords);
+                            }
                         }
                     }
                 }
+                
+                // Save remaining records
+                if (!records.isEmpty()) {
+                    repository.saveAll(records);
+                    totalRecords += records.size();
+                }
             }
             
-            // Save all records
-            repository.saveAll(records);
-            logger.info("Successfully loaded {} records from CSV", records.size());
+            logger.info("Successfully loaded {} records from CSV", totalRecords);
             
         } catch (IOException | CsvException e) {
             logger.error("Error loading CSV data from {}: {}", filePath, e.getMessage());

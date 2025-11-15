@@ -15,7 +15,7 @@ public class CacheConfig {
     @Profile("!prod")
     public CacheManager cacheManager() {
         ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
-        cacheManager.setCacheNames(java.util.Arrays.asList("districts", "district-performance", "dashboard-summary"));
+        cacheManager.setCacheNames(java.util.Arrays.asList("districts", "district-performance", "dashboard-summary", "chart-images"));
         return cacheManager;
     }
 }

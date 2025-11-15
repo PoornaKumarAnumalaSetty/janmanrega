@@ -11,9 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +27,9 @@ public class DashboardController {
 
     @Autowired
     private DashboardService dashboardService;
+    
+    @Autowired
+    private RestTemplate restTemplate;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -87,7 +88,7 @@ public class DashboardController {
         logger.info("Attempting to locate district for coordinates: {}, {}", lat, lon);
 
         try {
-            RestTemplate rt = new RestTemplate();
+            RestTemplate rt = restTemplate;
             String url = String.format("https://nominatim.openstreetmap.org/reverse?format=json&lat=%f&lon=%f&zoom=10&addressdetails=1", lat, lon);
             HttpHeaders headers = new HttpHeaders();
             headers.set("User-Agent", "janmanrega-dashboard/1.0 (contact: admin@example.com)");
