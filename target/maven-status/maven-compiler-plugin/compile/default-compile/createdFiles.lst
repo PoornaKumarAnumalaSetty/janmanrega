@@ -1,9 +1,0 @@
-com/gov/dashboard/config/WebConfig.class
-com/gov/dashboard/JanmanregaApplication.class
-com/gov/dashboard/repository/DistrictPerformanceRepository.class
-com/gov/dashboard/service/DataInitializer.class
-com/gov/dashboard/service/DashboardService.class
-com/gov/dashboard/config/CacheConfig.class
-com/gov/dashboard/service/CsvDataService.class
-com/gov/dashboard/entity/DistrictPerformance.class
-com/gov/dashboard/controller/DashboardController.class

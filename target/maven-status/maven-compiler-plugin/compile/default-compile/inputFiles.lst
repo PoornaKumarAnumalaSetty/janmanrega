@@ -1,9 +1,0 @@
-/home/runner/work/janmanrega/janmanrega/src/main/java/com/gov/dashboard/service/DataInitializer.java
-/home/runner/work/janmanrega/janmanrega/src/main/java/com/gov/dashboard/config/CacheConfig.java
-/home/runner/work/janmanrega/janmanrega/src/main/java/com/gov/dashboard/service/CsvDataService.java
-/home/runner/work/janmanrega/janmanrega/src/main/java/com/gov/dashboard/service/DashboardService.java
-/home/runner/work/janmanrega/janmanrega/src/main/java/com/gov/dashboard/repository/DistrictPerformanceRepository.java
-/home/runner/work/janmanrega/janmanrega/src/main/java/com/gov/dashboard/entity/DistrictPerformance.java
-/home/runner/work/janmanrega/janmanrega/src/main/java/com/gov/dashboard/config/WebConfig.java
-/home/runner/work/janmanrega/janmanrega/src/main/java/com/gov/dashboard/JanmanregaApplication.java
-/home/runner/work/janmanrega/janmanrega/src/main/java/com/gov/dashboard/controller/DashboardController.java
